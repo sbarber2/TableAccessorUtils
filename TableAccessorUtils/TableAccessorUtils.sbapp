@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<modify version="7.6.0">
+    <add>
+        <annotations>
+            <annotation name="hygienic"/>
+        </annotations>
+        <import alias="SampleTableSchema" from="TableOperator.sbapp" item="SampleTableSchema"/>
+        <data name="SampleTable" shared="false" source="concrete" type="querytable">
+            <param name="storage-method" value="memory"/>
+            <param name="replicated" value="false"/>
+            <param name="table-schema" value="SampleTableSchema"/>
+            <param name="truncate" value="false"/>
+            <preload format="csv" mode="text">1,a&#13;
+2,b</preload>
+        </data>
+        <stream name="GetAllRows">
+            <schema/>
+        </stream>
+        <stream name="ReadAllRows">
+            <schema/>
+        </stream>
+        <box name="GetAllRowsJava" type="java">
+            <input port="1" stream="GetAllRows"/>
+            <output port="1" stream="AllRowsJava"/>
+            <param name="start:state" value="true"/>
+            <param name="javaclass" value="com.tibco.tcx.sample.GetAllRowsOperator"/>
+            <param name="table" value="SampleTable"/>
+        </box>
+        <box name="ReadAllRowsQuery" type="query">
+            <input port="1" stream="ReadAllRows"/>
+            <output port="1" stream="AllRows"/>
+            <dataref id="querytable" name="SampleTable"/>
+            <param name="operation" value="read"/>
+            <param name="where" value="all-rows"/>
+            <param name="write-type" value="insert"/>
+            <param name="if-write-fails" value="ignore"/>
+            <param name="no-match-mode" value="output-no-match-null"/>
+            <param name="order-by-direction" value="none"/>
+            <target-list>
+                <item name="input" selection="all"/>
+                <item name="current" selection="none"/>
+                <item name="old" selection="none"/>
+            </target-list>
+            <target-list goal-schema="SampleSchema" name="insert">
+                <item name="input" selection="all"/>
+            </target-list>
+            <target-list goal-schema="SampleSchema" name="update">
+                <item name="input" selection="all"/>
+            </target-list>
+            <target-list goal-schema="SampleSchema" name="no-match">
+                <item name="input" selection="all"/>
+            </target-list>
+        </box>
+        <output-stream name="AllRows"/>
+        <output-stream name="AllRowsJava"/>
+    </add>
+</modify>
