@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<modify version="7.6.0">
-    <add generator="gui">
-        <annotations>
-            <annotation name="hygienic"/>
-        </annotations>
-    </add>
-</modify>
